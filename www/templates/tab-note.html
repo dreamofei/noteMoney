@@ -1,0 +1,33 @@
+﻿<ion-view view-title="Note">
+    <ion-content>
+        <ion-list>
+            <div class="list">
+                <label class="item item-input">
+                    日期：<input type="text" placeholder="哪天花的钱？" ng-click="pickDate()" ng-model="baseObj.noteDate">
+                </label>
+                <label class="item item-input">
+                    支出：<input type="text" placeholder="花了多少？">
+                </label>
+                
+                <label class="item" style="border-bottom-width:0px;">
+                    类别：
+                </label>
+                <div style="width:100%;max-height:220px;padding-left:20px;padding-bottom:20px;overflow-y:auto;">
+                    <button class="button payType" ng-repeat="t in payTypes track by $index" ng-class="{true: 'payTypeSelect', false: ''}[selectIndex==$index]" ng-click="payTypeSelect($index)"><h6>{{t.Name}}</h6></button>
+                </div>
+                <label class="item item-input">
+                    备注：<textarea placeholder="备注下，看得更明白..."></textarea>
+                </label>
+            </div>
+
+            <input ng-model="baseObj.newPayType" />
+            <button class="button button-block button-positive" ng-click="insertPayType()">插入{{baseObj.newPayType}}</button>
+            <button class="button button-block button-positive" ng-click="selectPayType()">查询</button>
+            <button class="button button-block button-positive" ng-click="deletePayType()">删除</button> 
+
+        </ion-list>
+
+
+
+</ion-content>
+</ion-view>

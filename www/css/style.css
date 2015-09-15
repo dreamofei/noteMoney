@@ -1,0 +1,16 @@
+/* Empty. Add your own CSS if you like */
+.payType {
+    border-radius: 50px;
+    width: 60px;
+    height: 60px;
+    margin: 2px;
+
+    /*width: -moz-calc(100%/5);
+    width: -webkit-calc(100%/5);
+    width: calc(100%/5);
+    height:auto;*/
+}
+
+.payTypeSelect {
+    background-color: #ffa61c;
+}
