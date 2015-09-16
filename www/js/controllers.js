@@ -21,7 +21,7 @@
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService) {
+.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs) {
 
     //为了实现真正的双向绑定，先定义一个顶级对象,接下来所以得对象都定义到baseObj下，犹如baseObj的属性一样。
     $scope.baseObj = new Object();
@@ -53,7 +53,8 @@
     $scope.insertPayType = function () {
         var query = "INSERT INTO tb_payType(Name) VALUES(?)";
         $cordovaSQLite.execute(db, query, [$scope.baseObj.newPayType]).then(function (res) {
-            alert("INSERT ID->" + res.insertId);
+            alert("添加成功");
+            $scope.selectPayType();
         }, function (err) {
             alert(err);
         });
@@ -62,7 +63,7 @@
     $scope.deletePayType = function () {
         var query = "delete from tb_payType";
         $cordovaSQLite.execute(db, query).then(function (res) {
-            alert("删除完成");
+            alert("payType已清空");
         }, function (err) {
             alert(err);
         });
@@ -70,7 +71,7 @@
     //查询payType
     $scope.selectPayType = function () {
         var query = "SELECT Id,Name FROM tb_payType";
-        var tempPayTypes = [];
+        var tempPayTypes = [{ Id: '100', Name: '餐饮' }, { Id: '101', Name: '服饰' }, { Id: '102', Name: '交通' }];
         $cordovaSQLite.execute(db, query).then(function (res) {
             if (res.rows.length > 0) {
                 //console.log("count->" + res.rows.length);
@@ -83,20 +84,21 @@
                 alert("0条记录");
             }
             //alert(angular.toJson(tempPayTypes));
-            $scope.payTypes = [{ Id: '0', Name: '餐饮' }, { Id: '2', Name: '服饰' }, { Id: '3', Name: '交通' }].concat(tempPayTypes);
+            $scope.payTypes = tempPayTypes.concat([{ Id: '-1', Name: '✚' }]);
         }, function (err) {
             alert(err);
         });
     }
-    //$scope.selectPayType();
-    var payTypesFromDB = $scope.selectPayType();
-    //var payTypesFromDB = ['cesi'];
-    //, '娱乐', '通信', '日常', '测试四字'
-    //$scope.payTypes = [{ Id: '0', Name: '餐饮' }, { Id: '2', Name: '服饰' }, { Id: '3', Name: '交通' }].concat(payTypesFromDB);
-    alert(angular.toJson($scope.payTypes));
+
+    $scope.selectPayType();
+
     $scope.selectIndex = 0;
     $scope.payTypeSelect = function (index) {
-        $scope.selectIndex = index;
+        if (index == -1) {
+            alert("add...");
+        } else {
+            $scope.selectIndex = index;
+        }
         //alert($scope.payTypes[$scope.selectIndex]);
     }
 
