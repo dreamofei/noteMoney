@@ -21,7 +21,7 @@
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet) {
+.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet, $ionicPopup) {
 
     //为了实现真正的双向绑定，先定义一个顶级对象,接下来所以得对象都定义到baseObj下，犹如baseObj的属性一样。
     $scope.baseObj = new Object();
@@ -55,7 +55,27 @@
     $scope.deleteAllPayType = function () {
         var query = "delete from tb_payType";
         $cordovaSQLite.execute(db, query).then(function (res) {
-            alert("payType已清空");
+            $cordovaToast.show('类型已清空', 'short', 'center').then(function (success) { }, function (error) { });
+            $scope.selectPayType();
+        }, function (err) {
+            alert(err);
+        });
+    }
+    //删除指定payType
+    $scope.deletePayTypeById = function (id) {
+        var query = "delete from tb_payType where Id=?";
+        $cordovaSQLite.execute(db, query,[id]).then(function (res) {
+            $cordovaToast.show('删除成功', 'short', 'center').then(function (success) { }, function (error) { });
+            $scope.selectPayType();
+        }, function (err) {
+            alert(err);
+        });
+    }
+    //修改指定payType
+    $scope.updatePayType = function (modifiedPayType) {
+        var query = "update tb_payType set Name=? where Id=?";
+        $cordovaSQLite.execute(db, query, [modifiedPayType.Name,modifiedPayType.Id]).then(function (res) {
+            $cordovaToast.show('修改成功', 'short', 'center').then(function (success) { }, function (error) { });
             $scope.selectPayType();
         }, function (err) {
             alert(err);
@@ -72,8 +92,9 @@
                     //console.log(angular.toJson(res.rows));
                     tempPayTypes.push({ Id: res.rows.item(i).Id , Name: res.rows.item(i).Name });
                 }
+                $scope.selectIndex = tempPayTypes[0].Id;//设置默认选中类型
             } else {
-                alert("0条记录");
+                $cordovaToast.show('没有任何类别', 'short', 'center').then(function (success) { }, function (error) { });
             }
             $scope.payTypes = tempPayTypes.concat([{ Id: '-1', Name: '✚' }]);
         }, function (err) {
@@ -85,42 +106,65 @@
     $scope.selectPayType();
 
     //用户选择类别
-    $scope.selectIndex = 100;
     $scope.payTypeSelect = function (index) {
         if (index == -1) {
-            $cordovaDialogs.prompt('简约的名字更时尚', '添加新类别', ['取消', '确定'], '新类别').then(function (result) {
-                var btnIndex = result.buttonIndex;
-                if (btnIndex == 2) {
-                    $scope.insertPayType(result.input1);
-                } else {
-                    return;
+            $ionicPopup.prompt({
+                title: '添加新类别',
+                inputPlaceholder: '简约的名字更时尚...',
+                cancelText: '取消',
+                okText:'确定'
+            }).then(function (res) {
+                if (res != undefined) {
+                    if (res != '') {
+                        $scope.insertPayType(res);
+                    } else {
+                        $cordovaToast.show('类别名不能为空', 'short', 'center').then(function (success) { }, function (error) { });
+                    }
                 }
             });
+
         } else {
             $scope.selectIndex = index;
         }
     }
 
-    //长按类别，删除类别
+    //长按类别，删除/修改类别
     $scope.payTypeOnHold = function (index,name) {
         //当index==-1的是添加按钮，不需要删除
         if (index != -1) {
             $ionicActionSheet.show({
                 buttons: [
-                    { text: '编辑名称' },
+                    { text: '修改名称' },
                     { text: '删除' }
                 ],
                 buttonClicked: function (btnIndex) {
                     if (btnIndex == 0) {
-                        alert('编辑 '+name);
+                        //修改按钮被点击，执行修改操作
+                        $ionicPopup.prompt({
+                            title: '修改类别名称',
+                            inputPlaceholder: name,
+                            cancelText: '取消',
+                            okText: '确定'
+                        }).then(function (res) {
+                            if (res != undefined) {
+                                if (res != '') {
+                                    $scope.updatePayType({Id:index,Name:res});
+                                } else {
+                                    $cordovaToast.show('类别名不能为空', 'short', 'center').then(function (success) { }, function (error) { });
+                                }
+                            }
+                        });
                     }
                     if (btnIndex == 1) {
                         //删除按钮被点击，执行删除操作
-                        $cordovaDialogs.confirm('确定要删除吗?','危险操作',['取消','确定']).then(function (buttonIndex) {
-                            if (buttonIndex == 2) {
-                                alert('真删除了');
-                            } else {
-                                return;
+                        $ionicPopup.confirm({
+                            title: '危险操作',
+                            template: '确定要删除吗?',
+                            cancelText: '取消',
+                            okText: '确定'
+                        }).then(function (res) {
+                            if (res) {
+                                $scope.deletePayTypeById(index);
                             }
                         });
                     }
