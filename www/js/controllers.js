@@ -27,7 +27,7 @@
     $scope.baseObj = new Object();
 
     //选择日期,初始化今天
-    $scope.baseObj.noteDate = dfCommonService.ConvertToDate(new Date());
+    $scope.baseObj.payDate = dfCommonService.ConvertToDate(new Date());
     $scope.pickDate = function () {
         var options = {
             date: new Date(),
@@ -36,12 +36,11 @@
 
         $cordovaDatePicker.show(options).then(function (date) {
             var finalDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-            $scope.baseObj.noteDate = finalDate;
+            $scope.baseObj.payDate = finalDate;
         });
     }
 
     //添加payType
-    //$scope.baseObj.newPayType = null;
     $scope.insertPayType = function (newPayType) {
         var query = "INSERT INTO tb_payType(Name) VALUES(?)";
         $cordovaSQLite.execute(db, query, [newPayType]).then(function (res) {
@@ -84,7 +83,8 @@
     //查询payType
     $scope.selectPayType = function () {
         var query = "SELECT Id,Name FROM tb_payType";
-        var tempPayTypes = [{ Id: '100', Name: '餐饮' }, { Id: '101', Name: '服饰' }, { Id: '102', Name: '交通' }];
+        //var tempPayTypes = [{ Id: '100', Name: '餐饮' }, { Id: '101', Name: '服饰' }, { Id: '102', Name: '交通' }];
+        var tempPayTypes = [];
         $cordovaSQLite.execute(db, query).then(function (res) {
             if (res.rows.length > 0) {
                 //console.log("count->" + res.rows.length);
@@ -92,7 +92,7 @@
                     //console.log(angular.toJson(res.rows));
                     tempPayTypes.push({ Id: res.rows.item(i).Id , Name: res.rows.item(i).Name });
                 }
-                $scope.selectIndex = tempPayTypes[0].Id;//设置默认选中类型
+                $scope.baseObj.selectIndex = tempPayTypes[0].Id;//设置默认选中类型
             } else {
                 $cordovaToast.show('没有任何类别', 'short', 'center').then(function (success) { }, function (error) { });
             }
@@ -124,7 +124,7 @@
             });
 
         } else {
-            $scope.selectIndex = index;
+            $scope.baseObj.selectIndex = index;
         }
     }
 
@@ -172,6 +172,15 @@
                 }
             });
         }
+    }
+
+    $scope.insertACost = function () {
+        var query = "INSERT INTO tb_pays(PayDay,PayOut,PayType,Remark,InDateTime) VALUES(?,?,?,?,?)";
+        $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark,]).then(function (res) {
+            $cordovaToast.show('记账成功', 'short', 'center').then(function (success) { }, function (error) { });
+        }, function (err) {
+            alert(err);
+        });
     }
 
     //-----begin 隐藏功能
