@@ -21,7 +21,7 @@
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet, $ionicPopup) {
+.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet, $ionicPopup,$timeout) {
 
     //为了实现真正的双向绑定，先定义一个顶级对象,接下来所以得对象都定义到baseObj下，犹如baseObj的属性一样。
     $scope.baseObj = new Object();
@@ -103,7 +103,9 @@
     }
 
     //初始化类别
-    $scope.selectPayType();
+    $timeout($scope.selectPayType, 300);
+    $timeout($scope.selectPayType, 1000);//防止第一次300毫秒没加载完，再试一次。
+    //$scope.selectPayType();
 
     //用户选择类别
     $scope.payTypeSelect = function (index) {
@@ -173,14 +175,20 @@
             });
         }
     }
-
+    //记录一笔账
     $scope.insertACost = function () {
         var query = "INSERT INTO tb_pays(PayDay,PayOut,PayType,Remark,InDateTime) VALUES(?,?,?,?,?)";
-        $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark,]).then(function (res) {
+        $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark, dfCommonService.ConvertToDateTime(new Date())]).then(function (res) {
             $cordovaToast.show('记账成功', 'short', 'center').then(function (success) { }, function (error) { });
+            resetModels();
         }, function (err) {
             alert(err);
         });
+    }
+    //重置表单
+    var resetModels = function () {
+        $scope.baseObj.payOut = '';
+        $scope.baseObj.remark = '';
     }
 
     //-----begin 隐藏功能
