@@ -208,6 +208,66 @@
 
 })
 
+.controller('CountCtrl', function ($scope,dfCommonService) {
+    $scope.name = 'this is COuntCtrl';
+
+    $scope.baseObj = new Object();
+    $scope.baseObj.startDate =new Date(dfCommonService.FirstDateOfCurrentMouth());
+    $scope.baseObj.endDate = new Date(dfCommonService.ConvertToDate(new Date()));
+
+
+    $scope.showChart = function () {
+        var charts=new Highcharts.Chart({
+            chart: {
+                renderTo: 'chartContainer'
+            },
+            title: {
+                //floating:true,
+                //text: '各类花费的百分比'
+                text: null,
+                floating: true,
+                margin:-100
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: '占总花费',
+                data: [
+                    ['Firefox', 45.0],
+                    ['IE', 26.8],
+                    {
+                        name: 'Chrome',
+                        y: 12.8,
+                        sliced: true,
+                        selected: true
+                    },
+                    ['Safari', 8.5],
+                    ['Opera', 6.2],
+                    {
+                        name: '吃饭'
+                        ,y:0.7
+                    }
+                ]
+            }]
+        });
+
+    }
+})
+
 .controller('AccountCtrl', function ($scope, $ionicPopup) {
   $scope.settings = {
     enableFriends: true

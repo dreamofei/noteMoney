@@ -57,6 +57,10 @@ ComSer.factory('dfCommonService', ['$window', function ($window) {
         },
         ConvertToDateTime: function (date) {
             return this.ConvertToDate(date) + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        },
+        FirstDateOfCurrentMouth: function () {
+            var date = new Date();
+            return date.getFullYear() + '-' + (date.getMonth() + 1) + '-1';
         }
     };
 }]);
