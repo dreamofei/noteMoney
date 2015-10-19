@@ -3,22 +3,22 @@
 .controller('DashCtrl', function($scope) {})
 
 .controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
+    // With the new view caching in Ionic, Controllers are only called
+    // when they are recreated or on app start, instead of every page change.
+    // To listen for when this page is active (for example, to refresh data),
+    // listen for the $ionicView.enter event:
+    //
+    //$scope.$on('$ionicView.enter', function(e) {
+    //});
 
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
+    $scope.chats = Chats.all();
+    $scope.remove = function(chat) {
+        Chats.remove(chat);
+    };
 })
 
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
+    $scope.chat = Chats.get($stateParams.chatId);
 })
 
 .controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet, $ionicPopup,$timeout) {
@@ -35,7 +35,8 @@
         };
 
         $cordovaDatePicker.show(options).then(function (date) {
-            var finalDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            //var finalDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            var finalDate = dfCommonService.ConvertToDate(date);
             $scope.baseObj.payDate = finalDate;
         });
     }
@@ -178,6 +179,16 @@
     //记录一笔账
     $scope.insertACost = function () {
         var query = "INSERT INTO tb_pays(PayDay,PayOut,PayType,Remark,InDateTime) VALUES(?,?,?,?,?)";
+        //alert($scope.baseObj.payOut);
+        
+        if ($scope.baseObj.payOut == undefined) {
+            $ionicPopup.alert({ title: '注意', template: '请输入正确的金额' }).then(function (res) {
+                //$scope.isFocus = true;
+                document.getElementById('payOutID').focus();
+                return;
+            });
+        } 
+
         $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark, dfCommonService.ConvertToDateTime(new Date())]).then(function (res) {
             $cordovaToast.show('记账成功', 'short', 'center').then(function (success) { }, function (error) { });
             resetModels();
@@ -208,12 +219,72 @@
 
 })
 
-.controller('CountCtrl', function ($scope,dfCommonService) {
+.controller('CountCtrl', function ($scope, $rootScope, dfCommonService, $cordovaSQLite, DataStorage) {
     $scope.name = 'this is COuntCtrl';
 
     $scope.baseObj = new Object();
     $scope.baseObj.startDate =new Date(dfCommonService.FirstDateOfCurrentMouth());
-    $scope.baseObj.endDate = new Date(dfCommonService.ConvertToDate(new Date()));
+    $scope.baseObj.endDate = new Date();
+    
+    //得到指定日期区间的合计金额
+    var SetSumPay = function (startDate,endDate) {
+        var query = "SELECT SUM(PayOut) AS SumPay FROM tb_pays WHERE date(PayDay) BETWEEN date(?) AND date(?)";
+        $cordovaSQLite.execute(db, query, [startDate, endDate]).then(function (res) {
+            $scope.baseObj.sumPay = res.rows.item(0).SumPay;
+        }, function (err) {
+            alert(err);
+        });
+    }
+    //得到指定时间区间内每个类别的花销合计，结果转化成chart所需数据格式
+    var SetDataForChart = function (startDate, endDate) {
+        var query = "SELECT SUM(PayOut) GrpSumPay,B.Name PayType FROM tb_pays AS A JOIN tb_payType AS B ON A.payType=B.Id WHERE date(PayDay) BETWEEN date(?) AND date(?) GROUP BY B.Name";
+        $cordovaSQLite.execute(db, query, [startDate, endDate]).then(function (res) {
+            //alert(JSON.stringify(res.rows.items));
+            var groupCount = [];
+            for (var i = 0; i < res.rows.length; i++) {
+                var temp = { name: res.rows.item(i).PayType, y: res.rows.item(i).GrpSumPay };
+                groupCount.push(temp);
+            }
+            $scope.baseObj.dataForChart = groupCount;
+        }, function (err) {
+            alert(err);
+        });
+    }
+    //得到指定区间的消费详情列表
+    var SetPayList = function (startDate, endDate) {
+        var query = "SELECT A.Id,A.PayDay,A.PayOut,B.Name AS PayType,A.Remark,A.InDateTime"+
+                    " FROM tb_pays AS A"+
+                    " JOIN tb_payType AS B"+
+                    " ON A.PayType=B.Id"+
+                    " WHERE date(PayDay) BETWEEN date(?) AND date(?)"+
+                    " ORDER BY A.PayDay";
+        $cordovaSQLite.execute(db, query, [startDate, endDate]).then(function (res) {
+            var tempPayList = [];
+            for (var i = 0; i < res.rows.length; i++) {
+                var tempItem=res.rows.item(i);
+                var temp = {Id:tempItem.Id,PayDay:tempItem.PayDay,PayOut:tempItem.PayOut, PayType: tempItem.PayType, Remark:tempItem.Remark,InDateTime:tempItem.InDateTime };
+                tempPayList.push(temp);
+            }
+            $scope.baseObj.payList = tempPayList;
+            //alert(JSON.stringify(tempPayList));
+            //通过service共享payList
+            DataStorage.SetPayList(tempPayList);
+
+        }, function (err) {
+            alert(err);
+        });
+    }
+    //获取sumPay,DataForChart,PayList，并显示chart
+    $scope.GetCountData = function () {
+
+        var startDate = dfCommonService.ConvertToDate($scope.baseObj.startDate);
+        var endDate = dfCommonService.ConvertToDate($scope.baseObj.endDate);
+
+        SetSumPay(startDate, endDate);
+        SetDataForChart(startDate, endDate);
+        SetPayList(startDate, endDate);
+        $scope.showChart();
+    }
 
 
     $scope.showChart = function () {
@@ -226,7 +297,7 @@
                 //text: '各类花费的百分比'
                 text: null,
                 floating: true,
-                margin:-100
+                margin:-1000
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -239,33 +310,50 @@
                         enabled: true,
                         color: '#000000',
                         connectorColor: '#000000',
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} % 值：{point.y}'
                     }
                 }
             },
+            credits:{
+                enabled: true // 是否禁用版权信息
+                ,text:'花销分布'
+            },
+            //series: [{
+            //    type: 'pie',
+            //    name: '占总花费',
+            //    data: [
+            //        ['Firefox', 45.0],
+            //        ['IE', 26.8],
+            //        {
+            //            name: 'Chrome',
+            //            y: 12.8,
+            //            sliced: true,
+            //            selected: true
+            //        },
+            //        ['Safari', 8.5],
+            //        ['Opera', 6.2],
+            //        {
+            //            name: '吃饭'
+            //            ,y:0.7
+            //        }
+            //    ]
+            //}]
+
             series: [{
                 type: 'pie',
                 name: '占总花费',
-                data: [
-                    ['Firefox', 45.0],
-                    ['IE', 26.8],
-                    {
-                        name: 'Chrome',
-                        y: 12.8,
-                        sliced: true,
-                        selected: true
-                    },
-                    ['Safari', 8.5],
-                    ['Opera', 6.2],
-                    {
-                        name: '吃饭'
-                        ,y:0.7
-                    }
-                ]
+                data: $scope.baseObj.dataForChart
             }]
+
         });
 
     }
+
+})
+
+.controller('CountDetailCtrl', function ($scope, $rootScope, DataStorage) {
+    //通过service共享payList
+    $scope.payList = DataStorage.GetPayList();
 })
 
 .controller('AccountCtrl', function ($scope, $ionicPopup) {

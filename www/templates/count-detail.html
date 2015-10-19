@@ -1,0 +1,21 @@
+﻿<!--
+  This template loads for the 'tab.friend-detail' state (app.js)
+  'friend' is a $scope variable created in the FriendsCtrl controller (controllers.js)
+  The FriendsCtrl pulls data from the Friends service (service.js)
+  The Friends service returns an array of friend data
+-->
+<ion-view view-title="明细" ng-controller="CountDetailCtrl">
+    <ion-content class="padding">
+        <p>
+            list hear；
+        </p>
+        <table>
+            <tr>
+                <td>日期</td><td>类别</td><td>金额</td>
+            </tr>
+            <tr ng-repeat="pay in payList">
+                <td>{{pay.PayDay}}</td><td>{{pay.PayType}}</td><td>{{pay.PayOut}}</td><td>{{pay.InDateTime}}</td>
+            </tr>
+        </table>
+    </ion-content>
+</ion-view>
