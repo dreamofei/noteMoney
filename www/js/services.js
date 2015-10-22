@@ -86,12 +86,14 @@ ComSer.factory('DataStorage', function () {
     return dataStorageService;
 });
 
-ComSer.directive('setFocus', function () {
+ComSer.directive('setFocus', function ($timeout) {
     return {
         link: function (scope, element, attrs) {
             scope.$watch(attrs.setFocus, function (value) {
                 if (value == true) {
-                    element[0].parent.focus();
+                    $timeout(function () {
+                        element[0].focus();
+                    },100);
                 }
             });
         }

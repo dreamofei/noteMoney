@@ -3,26 +3,26 @@
         <ion-list>
             <div class="list">
                 <label class="item item-input">
-                    日期：<input type="text" placeholder="哪天花的钱？" ng-click="pickDate()" ng-model="baseObj.payDate">
+                    日期：<i class="icon ion-ios-calendar-outline placeholder-icon"></i><input type="text" placeholder="哪天花的钱？" ng-click="pickDate()" ng-model="baseObj.payDate">
                 </label>
                 <label class="item item-input">
-                    支出：<input id="payOutID" type="number" placeholder="花了多少？" ng-model="baseObj.payOut" set-focus="isFocus">
+                    支出：<i class="icon ion-card placeholder-icon"></i><input type="number" placeholder="花了多少？" ng-model="baseObj.payOut" set-focus="isFocus" ng-blur="payOutBlur()">
                 </label>
 
                 <label class="item" style="border-bottom-width:0px;">
-                    <p on-hold="hideUtil_payTypeOnHold()">类别：</p>
+                    <p on-hold="hideUtil_payTypeOnHold()"><i class="icon ion-ios-pricetags-outline"></i> 类别：</p>
                 </label>
                 <div style="width:100%;max-height:220px;padding-left:20px;padding-bottom:20px;overflow-y:auto;">
-                    <button class="button payType" ng-repeat="t in payTypes track by $index" ng-class="{true: 'payTypeSelect', false: ''}[baseObj.selectIndex==t.Id]" ng-click="payTypeSelect(t.Id)" on-hold="payTypeOnHold(t.Id,t.Name)">
+                    <button class="buttonCustom payType" ng-repeat="t in payTypes track by $index" ng-class="{true: 'payTypeSelect', false: ''}[baseObj.selectIndex==t.Id]" ng-click="payTypeSelect(t.Id)" on-hold="payTypeOnHold(t.Id,t.Name)">
                         <h6>{{t.Name}}</h6>
                     </button>
                 </div>
                 <label class="item item-input">
-                    备注：<textarea placeholder="备注下，看得更明白..." ng-model="baseObj.remark"></textarea>
+                    <i class="icon ion-ios-paper-outline"></i> <span style="margin-right:5px;">备注：</span><textarea placeholder="备注下，看得更明白..." ng-model="baseObj.remark"></textarea>
                 </label>
             </div>
 
-            <button class="button button-block button-balanced" ng-click="insertACost()">确定</button>
+            <button class="button button-block button-outline button-balanced icon ion-ios-compose-outline" ng-click="insertACost()"></button>
 
         </ion-list>
 
