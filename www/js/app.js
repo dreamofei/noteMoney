@@ -136,7 +136,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         views: {
             'tab-account': {
                 templateUrl: 'templates/tab-account.html',
-                controller: 'AccountCtrl'
+                //controller: 'countCtrl'
+            }
+        }
+    })
+
+    .state('tab.123account', {
+        url: '/123account',
+        views: {
+            'tab-123account': {
+                templateUrl: 'templates/tab-123account.html',
+                controller: '123AccountCtrl'
             }
         }
     })

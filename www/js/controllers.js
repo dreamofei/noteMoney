@@ -245,11 +245,11 @@
 })
 
 .controller('CountCtrl', function ($scope, $rootScope, dfCommonService, $cordovaSQLite, DataStorage, $ionicPopup,$timeout) {
-    $scope.name = 'this is COuntCtrl';
 
     $scope.baseObj = new Object();
     $scope.baseObj.startDate =new Date(dfCommonService.FirstDateOfCurrentMouth());
     $scope.baseObj.endDate = new Date();
+    $scope.isShowCountArea = false;
     
     //得到指定日期区间的合计金额
     var SetSumPay = function (startDate,endDate) {
@@ -273,6 +273,7 @@
                 groupCount.push(temp);
             }
             $scope.baseObj.dataForChart = groupCount;
+            JudgeHasData();
         }, function (err) {
             alert(err);
         });
@@ -310,18 +311,16 @@
         SetDataForChart(startDate, endDate);
         SetPayList(startDate, endDate);
 
-        //如果有数据才显示报表区域,因为数据都是异步加载，所以给个延迟（先这么用，如果数据量大的话会有问题）-------------需修改-------
-        $timeout(function () {
-            if ($scope.baseObj.dataForChart.length > 0) {
-                $scope.isShowCountArea = true;
-                $scope.showChart();
-            } else {
-                $scope.isShowCountArea = false;
-                $ionicPopup.alert({ title: '提示', template: '该时间段没有账单' }).then(function (res) { });
-            }
-        }, 50);
-        
-        
+    }
+    //判断是否有账单数据
+    var JudgeHasData = function () {
+        if ($scope.baseObj.dataForChart.length > 0) {
+            $scope.isShowCountArea = true;
+            $scope.showChart();
+        } else {
+            $scope.isShowCountArea = false;
+            $ionicPopup.alert({ title: '提示', template: '该时间段没有账单',okText:'确定',okType:'button-balanced' }).then(function (res) { });
+        }
     }
 
     $scope.showChart = function () {
@@ -383,7 +382,8 @@
             }]
         });
     }
-
+    //将GetCountData通过service共享为回调函数，当List页面有删除数据操作时，回调该方法进行报表数据刷新
+    DataStorage.SetCallBack($scope.GetCountData);
 
 })
 
@@ -391,18 +391,53 @@
     $scope.payDetail = JSON.parse($stateParams.pay);
 })
 
-.controller('CountListCtrl', function ($scope, $rootScope, DataStorage, $ionicPopup) {
+.controller('CountListCtrl', function ($scope, DataStorage, $ionicPopup, $cordovaToast,$cordovaSQLite) {
     //通过service共享payList
     $scope.payList = DataStorage.GetPayList();
 
+    //删除一笔记录
+    $scope.deletePayById = function (id) {
+        $ionicPopup.confirm({
+            title: '危险操作',
+            template: '确定要删除吗？',
+            cancelText: '取消',
+            okText: '确定',
+            okType:'button-assertive'
+        }).then(function (res) {
+            if (res) {
+                var query = "DELETE FROM tb_pays WHERE Id=?";
+                $cordovaSQLite.execute(db, query, [id]).then(function (res) {
+                    //数据库中删除成功后，直接移除前台model数据即可
+                    deletePayFromPayList(id);
+                    $cordovaToast.show('删除成功', 'short', 'center').then(function (success) { }, function (error) { });
+                    DataStorage.GetCallBack();//回调，刷新上一个页面报表数据
+                }, function (err) {
+                    alert(err);
+                });
+                
+            }
+        });
+    }
+    //当数据库删除成功后，直接从前台model中移除该条数据即可，不需要再重新查询
+    var deletePayFromPayList = function (id) {
+        for (var i in $scope.payList) {
+            if ($scope.payList[i].Id == id) {
+                $scope.payList.splice(i, 1);
+                break;
+            }
+        }
+    }
+
     //--begin 隐藏功能
+
+    //清空所以账单记录
     $scope.deleteAllPays = function () {
         $ionicPopup.confirm({
             title: '危险操作',
             template: '你触发了“清空账单”隐藏功能,确定清空所有账单数据吗?',
             cancelText: '取消',
             okText: '确定',
-            okType:''
+            okType:'button-assertive'
         }).then(function (res) {
             if (res) {
                 var query = "DELETE FROM tb_pays";
@@ -418,7 +453,11 @@
 
 })
 
-.controller('AccountCtrl', function ($scope, $ionicPopup) {
+.controller('AccountCtrl', function ($scope) {
+    $scope.name = "wwdeekjlj";
+})
+
+.controller('123AccountCtrl', function ($scope, $ionicPopup) {
   $scope.settings = {
     enableFriends: true
   };

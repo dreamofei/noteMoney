@@ -74,15 +74,36 @@ ComSer.factory('dfCommonService', ['$window', function ($window) {
 }]);
 
 ComSer.factory('DataStorage', function () {
+    var dataStorageService = {};
+
     //count和countDetail间共享payList
     var payList = [];
-    var dataStorageService = {};
     dataStorageService.GetPayList = function () {
         return payList;
     }
     dataStorageService.SetPayList = function (data) {
         payList = data;
     }
+
+    //count和countDetail间共享dataForChart
+    //var dataForChart = [];
+    //dataStorageService.GetDataForChart = function () {
+    //    return dataForChart;
+    //}
+    //dataStorageService.SetDataForChart = function (data) {
+    //    dataForChart = data;
+    //}
+
+    //count和countDetail间共享dataForChart
+    var callBackFun=null;
+    dataStorageService.GetCallBack = function () {
+        //return dataForChart;
+        callBackFun();
+    }
+    dataStorageService.SetCallBack = function (fun) {
+        callBackFun = fun;
+    }
+
     return dataStorageService;
 });
 

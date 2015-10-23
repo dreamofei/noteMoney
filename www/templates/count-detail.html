@@ -3,20 +3,28 @@
     <ion-content>
 
         <div class="list card">
-            <div class="item">
+            <div class="item item-icon-left">
+                <i class="icon ion-ios-calendar-outline"></i>
                 日期：{{payDetail.PayDay}}
             </div>
-            <div class="item">
+            <div class="item item-icon-left">
+                <i class="icon ion-ios-pricetags-outline"></i>
                 类别：{{payDetail.PayType}}
             </div>
-            <div class="item">
+            <div class="item item-icon-left">
+                <i class="icon ion-card"></i>
                 支出：{{payDetail.PayOut}}
             </div>
-            <div class="item">
+            <div class="item item-icon-left">
+                <i class="icon ion-ios-compose-outline"></i>
                 记账日期：{{payDetail.InDateTime}}
             </div>
-            <div class="item">
-                备注：{{payDetail.Remark}}
+            <div class="item item-icon-left item-divider">
+                <i class="icon ion-ios-paper-outline"></i>
+                备注：
+            </div>
+            <div class="item item-body">
+                {{payDetail.Remark}}
             </div>
         </div>
 
