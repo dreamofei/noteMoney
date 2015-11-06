@@ -27,6 +27,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         db = $cordovaSQLite.openDB("Note.db");
         $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_payType(Id integer primary key,Name text)");
         $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_pays(Id integer primary key,PayDay text,PayOut real,PayType integer,Remark text,InDateTime text)");
+        $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_syncQueue(Id integer,OptionType integer,InDateTime text)");//用于数据云同步记录，OptionType 1：新增，-1：删除
+        $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_login(Id integer,UserName text,Email text,PhoneNumber text,Photo blob)");
     });
 })
 
@@ -62,34 +64,34 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 
     // Each tab has its own nav history stack:
 
-    .state('tab.dash', {
-        url: '/dash',
-        views: {
-            'tab-dash': {
-                templateUrl: 'templates/tab-dash.html',
-                controller: 'DashCtrl'
-            }
-        }
-    })
+    //.state('tab.dash', {
+    //    url: '/dash',
+    //    views: {
+    //        'tab-dash': {
+    //            templateUrl: 'templates/tab-dash.html',
+    //            controller: 'DashCtrl'
+    //        }
+    //    }
+    //})
 
-    .state('tab.chats', {
-        url: '/chats',
-        views: {
-            'tab-chats': {
-                templateUrl: 'templates/tab-chats.html',
-                controller: 'ChatsCtrl'
-            }
-        }
-    })
-      .state('tab.chat-detail', {
-          url: '/chats/:chatId',
-          views: {
-              'tab-chats': {
-                  templateUrl: 'templates/chat-detail.html',
-                  controller: 'ChatDetailCtrl'
-              }
-          }
-      })
+    //.state('tab.chats', {
+    //    url: '/chats',
+    //    views: {
+    //        'tab-chats': {
+    //            templateUrl: 'templates/tab-chats.html',
+    //            controller: 'ChatsCtrl'
+    //        }
+    //    }
+    //})
+    //  .state('tab.chat-detail', {
+    //      url: '/chats/:chatId',
+    //      views: {
+    //          'tab-chats': {
+    //              templateUrl: 'templates/chat-detail.html',
+    //              controller: 'ChatDetailCtrl'
+    //          }
+    //      }
+    //  })
 
       .state('tab.note', {
           url: '/note',
@@ -141,21 +143,31 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         }
     })
 
-    .state('tab.123account', {
-        url: '/123account',
+    .state('tab.account-backup', {
+        url: '/backup',
         views: {
-            'tab-123account': {
-                templateUrl: 'templates/tab-123account.html',
-                controller: '123AccountCtrl'
+            'tab-account': {
+                templateUrl: 'templates/account-backup.html',
+                //controller: 'countCtrl'
             }
         }
     })
+
+    //.state('tab.123account', {
+    //    url: '/123account',
+    //    views: {
+    //        'tab-123account': {
+    //            templateUrl: 'templates/tab-123account.html',
+    //            controller: '123AccountCtrl'
+    //        }
+    //    }
+    //})
 
 
     ;
 
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/tab/dash');
-    //$urlRouterProvider.otherwise('/tab/note');
+    //$urlRouterProvider.otherwise('/tab/dash');
+    $urlRouterProvider.otherwise('/tab/note');
 
 });

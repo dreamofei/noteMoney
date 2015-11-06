@@ -209,9 +209,12 @@
             return;
         } 
 
-        $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark, dfCommonService.ConvertToDateTime(new Date())]).then(function (res) {
+        var tempInDateTime = dfCommonService.ConvertToDateTime(new Date());
+        $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark, tempInDateTime]).then(function (res) {
             $cordovaToast.show('记账成功', 'short', 'center').then(function (success) { }, function (error) { });
             resetModels();
+            //记账成功后，在同步队列中做记录
+            selectPayByInDateTime(tempInDateTime);
         }, function (err) {
             alert(err);
         });
@@ -225,6 +228,25 @@
     var resetModels = function () {
         $scope.baseObj.payOut = '';
         $scope.baseObj.remark = '';
+    }
+
+    //插入数据成功后，将这一信息记录到 同步队列的表中用来做云同步的依据（OptionType 1：新增，-1：删除）
+    var insertSyncQueue = function (Id, InDateTime) {
+        var query = "INSERT INTO tb_syncQueue(Id,OptionType,InDateTime) values(?,?,?)";
+        $cordovaSQLite.execute(db, query, [Id, 1, InDateTime]).then(function (res) {
+        }, function (err) {
+            alert(err);
+        });
+    }
+    var selectPayByInDateTime = function (InDateTime) {
+        var query = "SELECT Id FROM tb_pays WHERE InDateTime=?";
+        $cordovaSQLite.execute(db, query, [InDateTime]).then(function (res) {
+            if (res.rows.length > 0) {
+                insertSyncQueue(res.rows.item(0).Id,InDateTime);
+            }
+        }, function (err) {
+            alert(err);
+        });
     }
 
     //-----begin 隐藏功能
@@ -396,7 +418,7 @@
     $scope.payList = DataStorage.GetPayList();
 
     //删除一笔记录
-    $scope.deletePayById = function (id) {
+    $scope.deletePayById = function (id,inDateTime) {
         $ionicPopup.confirm({
             title: '危险操作',
             template: '确定要删除吗？',
@@ -411,6 +433,7 @@
                     deletePayFromPayList(id);
                     $cordovaToast.show('删除成功', 'short', 'center').then(function (success) { }, function (error) { });
                     DataStorage.GetCallBack();//回调，刷新上一个页面报表数据
+                    insertSyncQueue(id,inDateTime);//删除操作记录到syncQueue，待云同步使用
                 }, function (err) {
                     alert(err);
                 });
@@ -426,6 +449,15 @@
                 break;
             }
         }
+    }
+    //删除数据成功后，将这一信息记录到 同步队列的表中用来做云同步的依据（OptionType 1：新增，-1：删除）
+    var insertSyncQueue = function (id, inDateTime) {
+        var query = "INSERT INTO tb_syncQueue(Id,OptionType,InDateTime) values(?,?,?)";
+        $cordovaSQLite.execute(db, query, [id, -1, inDateTime]).then(function (res) {
+            alert("同步了");
+        }, function (err) {
+            alert(err);
+        });
     }
 
     //--begin 隐藏功能
@@ -453,8 +485,51 @@
 
 })
 
-.controller('AccountCtrl', function ($scope) {
-    $scope.name = "wwdeekjlj";
+.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup) {
+
+
+    var deleteSyncQueue = function (callBack) {
+        var query = "DELETE FROM tb_syncQueue";
+        $cordovaSQLite.execute(db, query).then(function (res) {
+            callBack();
+        }, function (err) {
+            alert(err);
+        });
+    }
+
+    //--begin 隐藏功能
+
+    //清空备份缓存队列记录
+    $scope.clearSyncQueue = function () {
+        $ionicPopup.confirm({
+            title: '危险操作',
+            template: '你触发了“清空云同步队列”隐藏功能,清空后部分数据（上次同步之后的记账信息）将无法同步到云上。确定清空吗?',
+            cancelText: '取消',
+            okText: '确定',
+            okType: 'button-assertive'
+        }).then(function (res) {
+            if (res) {
+                deleteSyncQueue(function () { alert("已清除"); });
+            }
+        });
+    }
+    //--End 隐藏功能
+})
+
+.controller('BackupCtrl', function ($scope, $cordovaSQLite) {
+
+    var selectAllInsertDate = function () {
+        var query = "SELECT Id,InDateTime FROM tb_syncQueue WHERE OptionType=1";
+        $cordovaSQLite.execute(db, query).then(function (res) {
+
+        }, function (err) {
+            alert(err);
+        });
+    }
+
+    $scope.Backup = function () {
+
+    }
 })
 
 .controller('123AccountCtrl', function ($scope, $ionicPopup) {
