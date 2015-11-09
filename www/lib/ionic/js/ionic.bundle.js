@@ -49311,6 +49311,9 @@ function($ionicTemplateLoader, $ionicBackdrop, $q, $timeout, $rootScope, $ionicB
      * with the given value.
      */
     prompt: showPrompt,
+
+    //---add by jiangyafei 2015-11-9 10:57:45
+    loginPop:showLoginPop,
     /**
      * @private for testing
      */
@@ -49530,6 +49533,34 @@ function($ionicTemplateLoader, $ionicBackdrop, $q, $timeout, $rootScope, $ionicB
       }]
     }, opts || {}));
   }
+
+  function showLoginPop(opts) {
+      var scope = $rootScope.$new(true);
+      scope.data = {};
+      var text = '';
+      if (opts.template && /<[a-z][\s\S]*>/i.test(opts.template) === false) {
+          text = '<span>' + opts.template + '</span>';
+          delete opts.template;
+      }
+      return showPopup(extend({
+          template: text + '<input ng-model="data.userName" type="' + (opts.inputType || 'text') +
+            '" placeholder="' + (opts.inputPlaceholder || ' 用户名/邮箱/手机号') + '" /><br>'+
+            "<input ng-model='data.password' type='password' placeholder=' 密码' />",
+          scope: scope,
+          buttons: [{
+              text: opts.cancelText || 'Cancel',
+              type: opts.cancelType || 'button-default',
+              onTap: function () { }
+          }, {
+              text: opts.okText || 'OK',
+              type: opts.okType || 'button-positive',
+              onTap: function () {
+                  return { userName: scope.data.userName, password: scope.data.password } || '';
+              }
+          }]
+      }, opts || {}));
+  }
+
 }]);
 
 /**

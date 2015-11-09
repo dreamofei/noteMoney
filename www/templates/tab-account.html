@@ -1,11 +1,26 @@
 ﻿<ion-view view-title="我" ng-controller="AccountCtrl">
     <ion-content>
         <div class="card">
-            <div class="item item-thumbnail-left">
+            <div class="item item-thumbnail-left" ng-show="isLogin">
                 <img src="/img/1003.jpg" />
-                <div style="margin-top:20px;">
+                <div style="margin-top:25%;">
                     <h2>名字</h2>
-                    <p>个性签名</p>
+                    <!--<p>个性签名</p>-->
+                </div>
+            </div>
+            <div class="item" ng-show="!isLogin">
+                <div class="text-center">
+                    <h3>登录，让数据飞到云上去...</h3>
+                </div>
+                <div class="row">
+                    <div class="col-10"></div>
+                    <div class="col">
+                        <button class="button button-balanced button-block" ng-click="LogIn()">登录</button>
+                    </div>
+                    <div class="col">
+                        <button class="button button-calm button-block">注册</button>
+                    </div>
+                    <div class="col-10"></div>
                 </div>
             </div>
         </div>

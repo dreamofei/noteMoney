@@ -487,6 +487,7 @@
 
 .controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup) {
 
+    $scope.baseObj = new Object();
 
     var deleteSyncQueue = function (callBack) {
         var query = "DELETE FROM tb_syncQueue";
@@ -494,6 +495,24 @@
             callBack();
         }, function (err) {
             alert(err);
+        });
+    }
+
+    //用于记录是否登录，view根据该值进行切换
+    $scope.isLogin = false;
+
+    $scope.LogIn = function () {
+        $ionicPopup.loginPop({
+            title: '登录',
+            cancelText: '取消',
+            okText: '确定',
+            okType: 'button-balanced'
+        }).then(function (res) {
+            if (res != undefined) {
+                alert(res.userName+" "+res.password);
+            } else {
+                //$cordovaToast.show('类别名不能为空', 'short', 'center').then(function (success) { }, function (error) { });
+            }
         });
     }
 
