@@ -29,6 +29,46 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_pays(Id integer primary key,PayDay text,PayOut real,PayType integer,Remark text,InDateTime text)");
         $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_syncQueue(Id integer,OptionType integer,InDateTime text)");//用于数据云同步记录，OptionType 1：新增，-1：删除
         $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tb_login(Id integer,UserName text,Email text,PhoneNumber text,Photo blob)");
+
+
+        //----------
+//        //双击退出
+//        $ionicPlatform.registerBackButtonAction(function  {
+
+//            //判断处于哪个页面时双击退出
+//            if ($state.includes("app.main")) {
+//                if ($rootScope.backButtonPressedOnceToExit) {
+//                    ionic.Platform.exitApp();
+//                } else {
+//                    $rootScope.backButtonPressedOnceToExit = true;
+//            //$mfaUIcontrol.showToast({ message: "Press once to exit the program!!!" }).then();
+//            alert("Press once to exit the program!!!");
+//            $timeout(function () {
+//                $rootScope.backButtonPressedOnceToExit = false;
+//            }, 2000);
+//        }
+//        }
+//    else if ($ionicHistory.backView()) {
+//                $ionicHistory.goBack();
+//} else {
+//                if ($rootScope.backButtonPressedOnceToExit) {
+//                    ionic.Platform.exitApp();
+//} else {
+//    $rootScope.backButtonPressedOnceToExit = true;
+//    //$mfaUIcontrol.showToast({ message: "Press once to exit the program!!!" }).then();
+//    alert("!Press once to exit the program!!!");
+//    $timeout(function () {
+//        $rootScope.backButtonPressedOnceToExit = false;
+//    }, 2000);
+//}
+//}
+//e.preventDefault();
+//return false;
+//}, 101);
+//});
+
+        //----------
+
     });
 })
 

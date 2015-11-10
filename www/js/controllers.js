@@ -1,8 +1,8 @@
 ﻿angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope) {})
+.controller('DashCtrl', function ($scope) { })
 
-.controller('ChatsCtrl', function($scope, Chats) {
+.controller('ChatsCtrl', function ($scope, Chats) {
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
     // To listen for when this page is active (for example, to refresh data),
@@ -12,16 +12,16 @@
     //});
 
     $scope.chats = Chats.all();
-    $scope.remove = function(chat) {
+    $scope.remove = function (chat) {
         Chats.remove(chat);
     };
 })
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
+.controller('ChatDetailCtrl', function ($scope, $stateParams, Chats) {
     $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet, $ionicPopup,$timeout) {
+.controller('NoteCtrl', function ($scope, $cordovaDatePicker, $cordovaSQLite, dfCommonService, $cordovaDialogs, $cordovaToast, $ionicActionSheet, $ionicPopup, $timeout) {
 
     //为了实现真正的双向绑定，先定义一个顶级对象,接下来所以得对象都定义到baseObj下，犹如baseObj的属性一样。
     $scope.baseObj = new Object();
@@ -64,7 +64,7 @@
     //删除指定payType
     $scope.deletePayTypeById = function (id) {
         var query = "delete from tb_payType where Id=?";
-        $cordovaSQLite.execute(db, query,[id]).then(function (res) {
+        $cordovaSQLite.execute(db, query, [id]).then(function (res) {
             $cordovaToast.show('删除成功', 'short', 'center').then(function (success) { }, function (error) { });
             $scope.selectPayType();
         }, function (err) {
@@ -74,7 +74,7 @@
     //修改指定payType
     $scope.updatePayType = function (modifiedPayType) {
         var query = "update tb_payType set Name=? where Id=?";
-        $cordovaSQLite.execute(db, query, [modifiedPayType.Name,modifiedPayType.Id]).then(function (res) {
+        $cordovaSQLite.execute(db, query, [modifiedPayType.Name, modifiedPayType.Id]).then(function (res) {
             $cordovaToast.show('修改成功', 'short', 'center').then(function (success) { }, function (error) { });
             $scope.selectPayType();
         }, function (err) {
@@ -91,7 +91,7 @@
                 //console.log("count->" + res.rows.length);
                 for (var i = 0; i < res.rows.length; i++) {
                     //console.log(angular.toJson(res.rows));
-                    tempPayTypes.push({ Id: res.rows.item(i).Id , Name: res.rows.item(i).Name });
+                    tempPayTypes.push({ Id: res.rows.item(i).Id, Name: res.rows.item(i).Name });
                 }
                 $scope.baseObj.selectIndex = tempPayTypes[0].Id;//设置默认选中类型
             } else {
@@ -118,7 +118,7 @@
                 inputPlaceholder: '简约的名字更时尚...',
                 cancelText: '取消',
                 okText: '确定',
-                okType:'button-balanced'
+                okType: 'button-balanced'
             }).then(function (res) {
                 if (res != undefined) {
                     if (res != '') {
@@ -138,7 +138,7 @@
         var query = "SELECT Id FROM tb_pays WHERE PayType=?";
         $cordovaSQLite.execute(db, query, [id]).then(function (res) {
             if (res.rows.length > 0) {
-                $ionicPopup.alert({ title: '注意', template: '该类型存在账单数据，不能删除',okText:'确定',okType:'button-balanced' }).then(function (res) { });
+                $ionicPopup.alert({ title: '注意', template: '该类型存在账单数据，不能删除', okText: '确定', okType: 'button-balanced' }).then(function (res) { });
             } else {
                 $scope.deletePayTypeById(id);
             }
@@ -148,7 +148,7 @@
     }
 
     //长按类别，删除/修改类别
-    $scope.payTypeOnHold = function (index,name) {
+    $scope.payTypeOnHold = function (index, name) {
         //当index==-1的是添加按钮，不需要删除
         if (index != -1) {
             $ionicActionSheet.show({
@@ -164,11 +164,11 @@
                             inputPlaceholder: name,
                             cancelText: '取消',
                             okText: '确定',
-                            okType:'button-balanced'
+                            okType: 'button-balanced'
                         }).then(function (res) {
                             if (res != undefined) {
                                 if (res != '') {
-                                    $scope.updatePayType({Id:index,Name:res});
+                                    $scope.updatePayType({ Id: index, Name: res });
                                 } else {
                                     $cordovaToast.show('类别名不能为空', 'short', 'center').then(function (success) { }, function (error) { });
                                 }
@@ -182,7 +182,7 @@
                             template: '确定要删除吗?',
                             cancelText: '取消',
                             okText: '确定',
-                            okType:'button-assertive'
+                            okType: 'button-assertive'
                         }).then(function (res) {
                             if (res) {
                                 safeDeletePayType(index);
@@ -198,16 +198,16 @@
     $scope.insertACost = function () {
         var query = "INSERT INTO tb_pays(PayDay,PayOut,PayType,Remark,InDateTime) VALUES(?,?,?,?,?)";
         //alert($scope.baseObj.payOut);
-        
+
         if ($scope.baseObj.payOut == undefined) {
-            $ionicPopup.alert({ title: '注意', template: '请输入正确的金额',okText:'确定',okType:'button-balanced' }).then(function (res) {
+            $ionicPopup.alert({ title: '注意', template: '请输入正确的金额', okText: '确定', okType: 'button-balanced' }).then(function (res) {
                 $scope.isFocus = true;//自定义directive来实现获取焦点
                 //$timeout(function () {
                 //    document.getElementById('payOutID').focus();
                 //},100);
             });
             return;
-        } 
+        }
 
         var tempInDateTime = dfCommonService.ConvertToDateTime(new Date());
         $cordovaSQLite.execute(db, query, [$scope.baseObj.payDate, $scope.baseObj.payOut, $scope.baseObj.selectIndex, $scope.baseObj.remark, tempInDateTime]).then(function (res) {
@@ -242,7 +242,7 @@
         var query = "SELECT Id FROM tb_pays WHERE InDateTime=?";
         $cordovaSQLite.execute(db, query, [InDateTime]).then(function (res) {
             if (res.rows.length > 0) {
-                insertSyncQueue(res.rows.item(0).Id,InDateTime);
+                insertSyncQueue(res.rows.item(0).Id, InDateTime);
             }
         }, function (err) {
             alert(err);
@@ -266,15 +266,15 @@
 
 })
 
-.controller('CountCtrl', function ($scope, $rootScope, dfCommonService, $cordovaSQLite, DataStorage, $ionicPopup,$timeout) {
+.controller('CountCtrl', function ($scope, $rootScope, dfCommonService, $cordovaSQLite, DataStorage, $ionicPopup, $timeout) {
 
     $scope.baseObj = new Object();
-    $scope.baseObj.startDate =new Date(dfCommonService.FirstDateOfCurrentMouth());
+    $scope.baseObj.startDate = new Date(dfCommonService.FirstDateOfCurrentMouth());
     $scope.baseObj.endDate = new Date();
     $scope.isShowCountArea = false;
-    
+
     //得到指定日期区间的合计金额
-    var SetSumPay = function (startDate,endDate) {
+    var SetSumPay = function (startDate, endDate) {
         var query = "SELECT SUM(PayOut) AS SumPay FROM tb_pays WHERE date(PayDay) BETWEEN date(?) AND date(?)";
         $cordovaSQLite.execute(db, query, [startDate, endDate]).then(function (res) {
             $scope.baseObj.sumPay = res.rows.item(0).SumPay;
@@ -284,8 +284,8 @@
     }
     //得到指定时间区间内每个类别的花销合计，结果转化成chart所需数据格式
     var SetDataForChart = function (startDate, endDate) {
-        var query = "SELECT SUM(PayOut) GrpSumPay,B.Name PayType"+
-            " FROM tb_pays AS A JOIN tb_payType AS B ON A.payType=B.Id"+
+        var query = "SELECT SUM(PayOut) GrpSumPay,B.Name PayType" +
+            " FROM tb_pays AS A JOIN tb_payType AS B ON A.payType=B.Id" +
             " WHERE date(PayDay) BETWEEN date(?) AND date(?) GROUP BY B.Name";
         $cordovaSQLite.execute(db, query, [startDate, endDate]).then(function (res) {
             //alert(JSON.stringify(res.rows.items));
@@ -302,17 +302,17 @@
     }
     //得到指定区间的消费详情列表
     var SetPayList = function (startDate, endDate) {
-        var query = "SELECT A.Id,A.PayDay,A.PayOut,B.Name AS PayType,A.Remark,A.InDateTime"+
-                    " FROM tb_pays AS A"+
-                    " JOIN tb_payType AS B"+
-                    " ON A.PayType=B.Id"+
-                    " WHERE date(PayDay) BETWEEN date(?) AND date(?)"+
+        var query = "SELECT A.Id,A.PayDay,A.PayOut,B.Name AS PayType,A.Remark,A.InDateTime" +
+                    " FROM tb_pays AS A" +
+                    " JOIN tb_payType AS B" +
+                    " ON A.PayType=B.Id" +
+                    " WHERE date(PayDay) BETWEEN date(?) AND date(?)" +
                     " ORDER BY A.PayDay";
         $cordovaSQLite.execute(db, query, [startDate, endDate]).then(function (res) {
             var tempPayList = [];
             for (var i = 0; i < res.rows.length; i++) {
-                var tempItem=res.rows.item(i);
-                var temp = {Id:tempItem.Id,PayDay:tempItem.PayDay,PayOut:tempItem.PayOut, PayType: tempItem.PayType, Remark:tempItem.Remark,InDateTime:tempItem.InDateTime };
+                var tempItem = res.rows.item(i);
+                var temp = { Id: tempItem.Id, PayDay: tempItem.PayDay, PayOut: tempItem.PayOut, PayType: tempItem.PayType, Remark: tempItem.Remark, InDateTime: tempItem.InDateTime };
                 tempPayList.push(temp);
             }
             $scope.baseObj.payList = tempPayList;
@@ -341,12 +341,12 @@
             $scope.showChart();
         } else {
             $scope.isShowCountArea = false;
-            $ionicPopup.alert({ title: '提示', template: '该时间段没有账单',okText:'确定',okType:'button-balanced' }).then(function (res) { });
+            $ionicPopup.alert({ title: '提示', template: '该时间段没有账单', okText: '确定', okType: 'button-balanced' }).then(function (res) { });
         }
     }
 
     $scope.showChart = function () {
-        var charts=new Highcharts.Chart({
+        var charts = new Highcharts.Chart({
             chart: {
                 renderTo: 'chartContainer'
             },
@@ -355,7 +355,7 @@
                 //text: '各类花费的百分比'
                 text: null,
                 floating: true,
-                margin:-1000
+                margin: -1000
             },
             tooltip: {
                 pointFormat: '{series.name}:<b>{point.percentage:.1f}%</b>'
@@ -372,9 +372,9 @@
                     }
                 }
             },
-            credits:{
+            credits: {
                 enabled: true // 是否禁用版权信息
-                ,text:'消费分布'
+                , text: '消费分布'
             },
             //series: [{
             //    type: 'pie',
@@ -413,18 +413,18 @@
     $scope.payDetail = JSON.parse($stateParams.pay);
 })
 
-.controller('CountListCtrl', function ($scope, DataStorage, $ionicPopup, $cordovaToast,$cordovaSQLite) {
+.controller('CountListCtrl', function ($scope, DataStorage, $ionicPopup, $cordovaToast, $cordovaSQLite) {
     //通过service共享payList
     $scope.payList = DataStorage.GetPayList();
 
     //删除一笔记录
-    $scope.deletePayById = function (id,inDateTime) {
+    $scope.deletePayById = function (id, inDateTime) {
         $ionicPopup.confirm({
             title: '危险操作',
             template: '确定要删除吗？',
             cancelText: '取消',
             okText: '确定',
-            okType:'button-assertive'
+            okType: 'button-assertive'
         }).then(function (res) {
             if (res) {
                 var query = "DELETE FROM tb_pays WHERE Id=?";
@@ -433,11 +433,11 @@
                     deletePayFromPayList(id);
                     $cordovaToast.show('删除成功', 'short', 'center').then(function (success) { }, function (error) { });
                     DataStorage.GetCallBack();//回调，刷新上一个页面报表数据
-                    insertSyncQueue(id,inDateTime);//删除操作记录到syncQueue，待云同步使用
+                    insertSyncQueue(id, inDateTime);//删除操作记录到syncQueue，待云同步使用
                 }, function (err) {
                     alert(err);
                 });
-                
+
             }
         });
     }
@@ -469,7 +469,7 @@
             template: '你触发了“清空账单”隐藏功能,确定清空所有账单数据吗?',
             cancelText: '取消',
             okText: '确定',
-            okType:'button-assertive'
+            okType: 'button-assertive'
         }).then(function (res) {
             if (res) {
                 var query = "DELETE FROM tb_pays";
@@ -485,7 +485,7 @@
 
 })
 
-.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup) {
+.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup, $http) {
 
     $scope.baseObj = new Object();
 
@@ -509,7 +509,53 @@
             okType: 'button-balanced'
         }).then(function (res) {
             if (res != undefined) {
-                alert(res.userName+" "+res.password);
+                //alert(res.userName + " " + res.password);
+                //$http({
+                //    method: "POST",
+                //    headers: {
+                //        'Content-Type': 'application/json'
+                //        //'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'
+                //    },
+                //    url: "http://localhost:6282/user/ValidateUser",
+                //    data:
+                //        {
+                //            UserName: res.userName,
+                //            PhoneNumber: res.userName,
+                //            Email: res.userName,
+                //            Password:res.password
+                //        }
+                //}).success(function (data, status, headers, config) {
+                //    alert(JSON.stringify(data));
+                //}).error(function (data, status, headers, config) {
+                //    alert(data);
+                //});
+                //---------------
+                var param = {
+                    UserName: res.userName,
+                    PhoneNumber: res.userName,
+                    Email: res.userName,
+                    Password: res.password
+                };
+                $http.post("http://localhost:6282/user/ValidateUser", param
+
+                ).success(function (data, status, headers, config) {
+                    alert(JSON.stringify(data));
+                }).error(function (data, status, headers, config) {
+                    alert(data);
+                });
+                //var param = {
+                //    UserName: res.userName,
+                //    PhoneNumber: res.userName,
+                //    Email: res.userName,
+                //    Password: res.password
+                //};
+                //$http.post("http://localhost:6282/api/values", param
+
+                //).success(function (data, status, headers, config) {
+                //    alert(JSON.stringify(data));
+                //}).error(function (data, status, headers, config) {
+                //    alert(data);
+                //});
             } else {
                 //$cordovaToast.show('类别名不能为空', 'short', 'center').then(function (success) { }, function (error) { });
             }
@@ -552,55 +598,55 @@
 })
 
 .controller('123AccountCtrl', function ($scope, $ionicPopup) {
-  $scope.settings = {
-    enableFriends: true
-  };
+    $scope.settings = {
+        enableFriends: true
+    };
 
-  $scope.showConfirm = function () {
-      var confirmPopup = $ionicPopup.confirm({
-          title: 'Consume Ice Cream',
-          template: 'Are you sure you want to eat this ice cream?'
-      });
-      confirmPopup.then(function (res) {
-          if (res) {
-              console.log('You are sure');
-          } else {
-              console.log('You are not sure');
-          }
-      });
-
-  };
-
-  $scope.showPopup = function () {
-      $scope.data = {}
-
-      // An elaborate, custom popup
-      var myPopup = $ionicPopup.show({
-          template: '<input type="password" ng-model="data.wifi">',
-          title: 'Enter Wi-Fi Password',
-          subTitle: 'Please use normal things',
-          scope: $scope,
-          buttons: [
-            { text: 'Cancel' },
-            {
-                text: '<b>Save</b>',
-                type: 'button-positive',
-                onTap: function (e) {
-                    if (!$scope.data.wifi) {
-                        //don't allow the user to close unless he enters wifi password
-                        e.preventDefault();
-                    } else {
-                        return $scope.data.wifi;
-                    }
-                }
+    $scope.showConfirm = function () {
+        var confirmPopup = $ionicPopup.confirm({
+            title: 'Consume Ice Cream',
+            template: 'Are you sure you want to eat this ice cream?'
+        });
+        confirmPopup.then(function (res) {
+            if (res) {
+                console.log('You are sure');
+            } else {
+                console.log('You are not sure');
             }
-          ]
-      });
-      myPopup.then(function (res) {
-          console.log('Tapped!', res);
-      });
-      $timeout(function () {
-          myPopup.close(); //close the popup after 3 seconds for some reason
-      }, 3000);
-  };
+        });
+
+    };
+
+    $scope.showPopup = function () {
+        $scope.data = {}
+
+        // An elaborate, custom popup
+        var myPopup = $ionicPopup.show({
+            template: '<input type="password" ng-model="data.wifi">',
+            title: 'Enter Wi-Fi Password',
+            subTitle: 'Please use normal things',
+            scope: $scope,
+            buttons: [
+              { text: 'Cancel' },
+              {
+                  text: '<b>Save</b>',
+                  type: 'button-positive',
+                  onTap: function (e) {
+                      if (!$scope.data.wifi) {
+                          //don't allow the user to close unless he enters wifi password
+                          e.preventDefault();
+                      } else {
+                          return $scope.data.wifi;
+                      }
+                  }
+              }
+            ]
+        });
+        myPopup.then(function (res) {
+            console.log('Tapped!', res);
+        });
+        $timeout(function () {
+            myPopup.close(); //close the popup after 3 seconds for some reason
+        }, 3000);
+    };
 });
