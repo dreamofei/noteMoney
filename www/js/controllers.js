@@ -485,7 +485,7 @@
 
 })
 
-.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup, $http) {
+.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup, $http, $state, $rootScope, $timeout) {
 
     $scope.baseObj = new Object();
 
@@ -509,47 +509,35 @@
             okType: 'button-balanced'
         }).then(function (res) {
             if (res != undefined) {
-                //alert(res.userName + " " + res.password);
-                //$http({
-                //    method: "POST",
-                //    headers: {
-                //        'Content-Type': 'application/json'
-                //        //'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'
-                //    },
-                //    url: "http://localhost:6282/user/ValidateUser",
-                //    data:
-                //        {
-                //            UserName: res.userName,
-                //            PhoneNumber: res.userName,
-                //            Email: res.userName,
-                //            Password:res.password
-                //        }
-                //}).success(function (data, status, headers, config) {
-                //    alert(JSON.stringify(data));
-                //}).error(function (data, status, headers, config) {
-                //    alert(data);
-                //});
-                //---------------
-                var param = {
-                    UserName: res.userName,
-                    PhoneNumber: res.userName,
-                    Email: res.userName,
-                    Password: res.password
-                };
-                $http.post("http://localhost:6282/user/ValidateUser", param
-
-                ).success(function (data, status, headers, config) {
+                $http({
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'   //'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'
+                    },
+                    url: "http://localhost:6282/user/ValidateUser",
+                    data:{
+                            UserName: res.userName,
+                            PhoneNumber: res.userName,
+                            Email: res.userName,
+                            Password:res.password
+                        }
+                }).success(function (data, status, headers, config) {
                     alert(JSON.stringify(data));
+                    if (data.ResultType = 'Success') {
+                        //$state.go("tab.account-backup");
+
+                    }
                 }).error(function (data, status, headers, config) {
                     alert(data);
                 });
+                //---------------
                 //var param = {
                 //    UserName: res.userName,
                 //    PhoneNumber: res.userName,
                 //    Email: res.userName,
                 //    Password: res.password
                 //};
-                //$http.post("http://localhost:6282/api/values", param
+                //$http.post("http://localhost:6282/user/ValidateUser", param
 
                 //).success(function (data, status, headers, config) {
                 //    alert(JSON.stringify(data));
@@ -561,6 +549,35 @@
             }
         });
     }
+
+    var storeUserInfo = function (userInfo) {
+        var query = "INSERT INTO tb_login(Id,UserName,Email,PhoneNumber) VALUES(?,?,?,?)";
+        $cordovaSQLite.execute(db, query,[userInfo.Id,userInfo.UserName,userInfo.Email,userInfo.PhoneNumber]).then(function (res) {
+            alert("store成功");
+        }, function (err) {
+            alert(err);
+        });
+    }
+
+    var selectUserInfo = function () {
+        var query = "SELECT Id,UserName,Email,PhoneNumber FROM tb_login";
+        $cordovaSQLite.execute(db, query).then(function (res) {
+            if (res.rows.length > 0) {
+                $rootScope.userInfo = {
+                    Id: res.rows(0).Id,
+                    UserName: res.rows(0).UserName,
+                    Email: res.rows(0).Email,
+                    PhoneNumber:res.rows(0).PhoneNumber
+                };
+                $scope.userName = $rootScope.userInfo.UserName;
+                $scope.isLogin = true;
+            }
+        }, function (err) {
+            alert(err);
+        })
+    }
+
+    $timeout(selectUserInfo,1000);
 
     //--begin 隐藏功能
 
