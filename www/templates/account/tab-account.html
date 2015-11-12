@@ -1,13 +1,13 @@
 ﻿<ion-view view-title="我" ng-controller="AccountCtrl">
     <ion-content>
         <div class="card">
-            <div class="item item-thumbnail-left" ng-show="isLogin">
+            <a class="item item-thumbnail-left" ng-show="isLogin" href="#/tab/accountDetail">
                 <img src="/img/1003.jpg" />
-                <div style="margin-top:25%;">
-                    <h2>{{$scope.userName}}</h2>
+                <div style="margin-top:60px;">
+                    <h2>{{userName}}</h2>
                     <!--<p>个性签名</p>-->
                 </div>
-            </div>
+            </a>
             <div class="item" ng-show="!isLogin">
                 <div class="text-center">
                     <h3>登录，让数据飞到云上去...</h3>
@@ -18,7 +18,7 @@
                         <button class="button button-balanced button-block" ng-click="LogIn()">登录</button>
                     </div>
                     <div class="col">
-                        <button class="button button-calm button-block">注册</button>
+                        <a class="button button-calm button-block" href="#/tab/accountRegister">注册</a>
                     </div>
                     <div class="col-10"></div>
                 </div>
@@ -36,7 +36,7 @@
                 数据恢复
             </a>
         </div>
-
+        <a href="javascript:void(0);"></a>
         <div class="list card">
             <a class="item item-icon-left" href="#">
                 <i class="icon ion-ios-gear-outline"></i>

@@ -405,7 +405,7 @@
         });
     }
     //将GetCountData通过service共享为回调函数，当List页面有删除数据操作时，回调该方法进行报表数据刷新
-    DataStorage.SetCallBack($scope.GetCountData);
+    DataStorage.SetCallBack_dataForChart($scope.GetCountData);
 
 })
 
@@ -432,7 +432,7 @@
                     //数据库中删除成功后，直接移除前台model数据即可
                     deletePayFromPayList(id);
                     $cordovaToast.show('删除成功', 'short', 'center').then(function (success) { }, function (error) { });
-                    DataStorage.GetCallBack();//回调，刷新上一个页面报表数据
+                    DataStorage.GetCallBack_dataForChart();//回调，刷新上一个页面报表数据
                     insertSyncQueue(id, inDateTime);//删除操作记录到syncQueue，待云同步使用
                 }, function (err) {
                     alert(err);
@@ -485,7 +485,7 @@
 
 })
 
-.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup, $http, $state, $rootScope, $timeout) {
+.controller('AccountCtrl', function ($scope, $cordovaSQLite, $ionicPopup, $http, $state, $rootScope, $timeout, DataStorage) {
 
     $scope.baseObj = new Object();
 
@@ -500,6 +500,7 @@
 
     //用于记录是否登录，view根据该值进行切换
     $scope.isLogin = false;
+    $scope.userName = null;
 
     $scope.LogIn = function () {
         $ionicPopup.loginPop({
@@ -514,7 +515,8 @@
                     headers: {
                         'Content-Type': 'application/json'   //'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'
                     },
-                    url: "http://localhost:6282/user/ValidateUser",
+                    //url: "http://localhost:6282/user/ValidateUser",
+                    url: "http://10.202.101.170:6282/user/ValidateUser",
                     data:{
                             UserName: res.userName,
                             PhoneNumber: res.userName,
@@ -522,28 +524,15 @@
                             Password:res.password
                         }
                 }).success(function (data, status, headers, config) {
-                    alert(JSON.stringify(data));
-                    if (data.ResultType = 'Success') {
+                    if (data.ResultType == 'Success') {
                         //$state.go("tab.account-backup");
-
+                        storeUserInfo(data.Data);
+                    }else{
+                        alert("用户名或密码错误");
                     }
                 }).error(function (data, status, headers, config) {
                     alert(data);
                 });
-                //---------------
-                //var param = {
-                //    UserName: res.userName,
-                //    PhoneNumber: res.userName,
-                //    Email: res.userName,
-                //    Password: res.password
-                //};
-                //$http.post("http://localhost:6282/user/ValidateUser", param
-
-                //).success(function (data, status, headers, config) {
-                //    alert(JSON.stringify(data));
-                //}).error(function (data, status, headers, config) {
-                //    alert(data);
-                //});
             } else {
                 //$cordovaToast.show('类别名不能为空', 'short', 'center').then(function (success) { }, function (error) { });
             }
@@ -553,21 +542,22 @@
     var storeUserInfo = function (userInfo) {
         var query = "INSERT INTO tb_login(Id,UserName,Email,PhoneNumber) VALUES(?,?,?,?)";
         $cordovaSQLite.execute(db, query,[userInfo.Id,userInfo.UserName,userInfo.Email,userInfo.PhoneNumber]).then(function (res) {
-            alert("store成功");
+            selectUserInfo();
         }, function (err) {
             alert(err);
         });
     }
 
     var selectUserInfo = function () {
+        $scope.isLogin = false;
         var query = "SELECT Id,UserName,Email,PhoneNumber FROM tb_login";
         $cordovaSQLite.execute(db, query).then(function (res) {
             if (res.rows.length > 0) {
                 $rootScope.userInfo = {
-                    Id: res.rows(0).Id,
-                    UserName: res.rows(0).UserName,
-                    Email: res.rows(0).Email,
-                    PhoneNumber:res.rows(0).PhoneNumber
+                    Id: res.rows.item(0).Id,
+                    UserName: res.rows.item(0).UserName,
+                    Email: res.rows.item(0).Email,
+                    PhoneNumber: res.rows.item(0).PhoneNumber
                 };
                 $scope.userName = $rootScope.userInfo.UserName;
                 $scope.isLogin = true;
@@ -577,7 +567,10 @@
         })
     }
 
-    $timeout(selectUserInfo,1000);
+    $timeout(selectUserInfo, 100);
+
+    //当detail中退出登录时，回调selectUserInfo方法刷新登录状态
+    DataStorage.SetCallBack_LogOut(selectUserInfo);
 
     //--begin 隐藏功能
 
@@ -611,6 +604,46 @@
 
     $scope.Backup = function () {
 
+    }
+})
+
+.controller('AccountDetailCtrl', function ($scope, $cordovaSQLite, $state, $ionicPopup, DataStorage,$rootScope) {
+
+    $scope.logOut = function () {
+        $ionicPopup.confirm({
+            title:"退出",
+            template:"确定要退出当前账号吗？",
+            okText: "确定",
+            okType: "button-assertive",
+            cancelText:"取消"
+        }).then(function (res) {
+            if (res) {
+                clearUserInfo();
+            }
+        });
+    }
+
+    var clearUserInfo = function () {
+        var query = "DELETE FROM tb_login";
+        $cordovaSQLite.execute(db, query).then(function (res) {
+            DataStorage.GetCallBack_LogOut();//回调selectUserInfo方法刷新登录状态
+            $state.go("tab.account");
+        }, function (err) {
+            alert(err);
+        });
+    }
+})
+
+.controller('AccountRegisterCtrl', function ($scope) {
+    $scope.baseObj = new Object();
+    $scope.registerWithEmail = true;
+    //type=1:邮箱注册 type=2：手机注册
+    $scope.changeRegisterType = function (type) {
+        if (type == 1) {
+            $scope.registerWithEmail = true;
+        } else {
+            $scope.registerWithEmail = false;
+        }
     }
 })
 

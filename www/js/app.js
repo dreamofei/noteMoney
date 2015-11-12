@@ -108,7 +108,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     //    url: '/dash',
     //    views: {
     //        'tab-dash': {
-    //            templateUrl: 'templates/tab-dash.html',
+    //            templateUrl: 'templates/test/tab-dash.html',
     //            controller: 'DashCtrl'
     //        }
     //    }
@@ -118,7 +118,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     //    url: '/chats',
     //    views: {
     //        'tab-chats': {
-    //            templateUrl: 'templates/tab-chats.html',
+    //            templateUrl: 'templates/test/tab-chats.html',
     //            controller: 'ChatsCtrl'
     //        }
     //    }
@@ -127,7 +127,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     //      url: '/chats/:chatId',
     //      views: {
     //          'tab-chats': {
-    //              templateUrl: 'templates/chat-detail.html',
+    //              templateUrl: 'templates/test/chat-detail.html',
     //              controller: 'ChatDetailCtrl'
     //          }
     //      }
@@ -137,7 +137,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           url: '/note',
           views: {
               'tab-note': {
-                  templateUrl: 'templates/tab-note.html',
+                  templateUrl: 'templates/note/tab-note.html',
                   controller: 'NoteCtrl'
               }
           }
@@ -147,7 +147,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           url: '/count',
           views: {
               'tab-count': {
-                  templateUrl: 'templates/tab-count.html',
+                  templateUrl: 'templates/count/tab-count.html',
                   //controller: 'countCtrl'
               }
           }
@@ -157,7 +157,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           url: '/countlist',
           views: {
               'tab-count': {
-                  templateUrl: 'templates/count-list.html',
+                  templateUrl: 'templates/count/count-list.html',
                   //controller: 'countCtrl'
               }
           }
@@ -167,7 +167,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         url: '/countdetail/:pay',
         views: {
             'tab-count': {
-                templateUrl: 'templates/count-detail.html',
+                templateUrl: 'templates/count/count-detail.html',
                 //controller: 'countCtrl'
             }
         }
@@ -177,7 +177,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         url: '/account',
         views: {
             'tab-account': {
-                templateUrl: 'templates/tab-account.html',
+                templateUrl: 'templates/account/tab-account.html',
                 //controller: 'countCtrl'
             }
         }
@@ -187,8 +187,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         url: '/backup',
         views: {
             'tab-account': {
-                templateUrl: 'templates/account-backup.html',
+                templateUrl: 'templates/account/account-backup.html',
                 //controller: 'countCtrl'
+            }
+        }
+    })
+
+    .state('tab.account-detail', {
+        url: '/accountDetail',
+        views: {
+            'tab-account': {
+                templateUrl: 'templates/account/account-detail.html',
+            }
+        }
+    })
+
+    .state('tab.account-register', {
+        url: '/accountRegister',
+        views: {
+            'tab-account': {
+                templateUrl: 'templates/account/account-register.html',
             }
         }
     })
@@ -207,7 +225,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     ;
 
     // if none of the above states are matched, use this as the fallback
-    //$urlRouterProvider.otherwise('/tab/dash');
     $urlRouterProvider.otherwise('/tab/note');
 
 });

@@ -1,0 +1,41 @@
+﻿<ion-view view-title="个人中心" ng-controller="AccountDetailCtrl">
+
+    <ion-content>
+
+        <div class="list card">
+            <a class="item item-icon-left item-avatar-right">
+                <img src="/img/1003.jpg" />
+                <i class="icon ion-android-person"></i>
+                <div style="margin-top: 10px;">头像</div>
+            </a>
+            <a class="item item-icon-left">
+                <i class="icon ion-ios-person-outline"></i>
+                用户名
+                <span class="item-note">
+                    {{userInfo.UserName}}
+                </span>
+            </a>
+            <a class="item item-icon-left">
+                <i class="icon ion-ios-email-outline"></i>
+                邮箱
+                <span class="item-note">
+                    {{userInfo.Email}}
+                </span>
+            </a>
+            <a class="item item-icon-left">
+                <i class="icon ion-ios-telephone-outline"></i>
+                手机号
+                <span class="item-note">
+                    {{userInfo.PhoneNumber}}
+                </span>
+            </a>
+        </div>
+
+        <div class="list card">
+            <a class="item">
+                <button class="button button-block button-assertive" ng-click="logOut()">退出当前账号</button>
+            </a>
+        </div>
+
+    </ion-content>
+</ion-view>

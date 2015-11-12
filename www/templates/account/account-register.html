@@ -1,0 +1,49 @@
+﻿<ion-view view-title="个人中心" ng-controller="AccountRegisterCtrl">
+
+    <ion-content>
+
+        <div class="list card">
+            <label class="item item-radio">
+                <input type="radio" name="group" ng-click="changeRegisterType(1)" checked />
+                <div class="item-content">
+                    用邮箱注册
+                </div>
+                <i class="radio-icon ion-checkmark"></i>
+            </label>
+            <label class="item item-radio">
+                <input type="radio" name="group" ng-click="changeRegisterType(2)" />
+                <div class="item-content">
+                    用手机号注册
+                </div>
+                <i class="radio-icon ion-checkmark"></i>
+            </label>
+        </div>
+
+        <div class="list card">
+            <div class="item card" ng-show="registerWithEmail">
+                <label class="item item-input">
+                    <input type="text" placeholder="邮箱" />
+                </label>
+                <label class="item item-input">
+                    <input type="text" placeholder="密码" />
+                </label>
+                <label class="item item-input">
+                    <input type="text" placeholder="确认密码" />
+                </label>
+            </div>
+
+            <div ng-show="!registerWithEmail">
+                <label class="item item-input">
+                    <input type="text" placeholder="手机号" />
+                </label>
+                <label class="item item-input">
+                    <input type="text" placeholder="密码" />
+                </label>
+                <label class="item item-input">
+                    <input type="text" placeholder="确认密码" />
+                </label>
+            </div>
+        </div>
+
+    </ion-content>
+</ion-view>

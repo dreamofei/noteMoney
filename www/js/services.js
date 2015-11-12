@@ -95,13 +95,22 @@ ComSer.factory('DataStorage', function () {
     //}
 
     //count和countDetail间共享dataForChart
-    var callBackFun=null;
-    dataStorageService.GetCallBack = function () {
+    var callBackFun_dataForChart = null;
+    dataStorageService.GetCallBack_dataForChart = function () {
         //return dataForChart;
-        callBackFun();
+        callBackFun_dataForChart();
     }
-    dataStorageService.SetCallBack = function (fun) {
-        callBackFun = fun;
+    dataStorageService.SetCallBack_dataForChart = function (fun) {
+        callBackFun_dataForChart = fun;
+    }
+
+    //account和accountDetail之间共享，当detail中退出登录时，回调account中查询登录用户方法刷新登录状态
+    var callBackFun_LogOut = null;
+    dataStorageService.GetCallBack_LogOut = function () {
+        callBackFun_LogOut();
+    }
+    dataStorageService.SetCallBack_LogOut = function (fun) {
+        callBackFun_LogOut = fun;
     }
 
     return dataStorageService;
