@@ -8,39 +8,39 @@
                 <div class="item-content">
                     用邮箱注册
                 </div>
-                <i class="radio-icon ion-checkmark"></i>
+                <i class="radio-icon ion-checkmark-circled"></i>
             </label>
             <label class="item item-radio">
                 <input type="radio" name="group" ng-click="changeRegisterType(2)" />
                 <div class="item-content">
                     用手机号注册
                 </div>
-                <i class="radio-icon ion-checkmark"></i>
+                <i class="radio-icon ion-checkmark-circled"></i>
             </label>
         </div>
 
         <div class="list card">
-            <div class="item card" ng-show="registerWithEmail">
+            <div class="list card" ng-show="registerWithEmail">
                 <label class="item item-input">
-                    <input type="text" placeholder="邮箱" />
+                    <input type="text" placeholder="邮箱" ng-model="baseObj.email" ng-blur="checkExistEmail()" />
                 </label>
                 <label class="item item-input">
-                    <input type="text" placeholder="密码" />
+                    <input type="text" placeholder="密码" ng-model="baseObj.emailPwd" />
                 </label>
                 <label class="item item-input">
-                    <input type="text" placeholder="确认密码" />
+                    <input type="text" placeholder="确认密码" ng-model="baseObj.emailPwdCfrm" />
                 </label>
             </div>
 
-            <div ng-show="!registerWithEmail">
+            <div class="list card" ng-show="!registerWithEmail">
                 <label class="item item-input">
-                    <input type="text" placeholder="手机号" />
+                    <input type="text" placeholder="手机号" ng-model="baseObj.phone" />
                 </label>
                 <label class="item item-input">
-                    <input type="text" placeholder="密码" />
+                    <input type="text" placeholder="密码" ng-model="baseObj.phonePwd" />
                 </label>
                 <label class="item item-input">
-                    <input type="text" placeholder="确认密码" />
+                    <input type="text" placeholder="确认密码" ng-model="baseObj.phonePwdCfrm" />
                 </label>
             </div>
         </div>

@@ -7,6 +7,8 @@
 // 'starter.controllers' is found in controllers.js
 
 var db = null;//使用本地数据库SQLite
+var cloudIp = "10.202.101.170";
+var cloudPort = "6282";
 
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova', 'dreamofei.ngCommon'])
 

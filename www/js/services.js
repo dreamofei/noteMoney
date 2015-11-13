@@ -69,6 +69,12 @@ ComSer.factory('dfCommonService', ['$window', function ($window) {
                 num = '0' + num;
             }
             return num;
+        },
+        GetHttpServer: function (ip, port) {
+            return "http://" + ip + ":" + port;
+        },
+        GetHttpsServer: function (ip, port) {
+            return "https://" + ip + ":" + port;
         }
     };
 }]);
@@ -123,7 +129,7 @@ ComSer.directive('setFocus', function ($timeout) {
                 if (value == true) {
                     $timeout(function () {
                         element[0].focus();
-                    },100);
+                    }, 100);
                 }
             });
         }

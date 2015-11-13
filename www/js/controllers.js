@@ -634,9 +634,16 @@
     }
 })
 
-.controller('AccountRegisterCtrl', function ($scope) {
+.controller('AccountRegisterCtrl', function ($scope, dfCommonService,$http) {
     $scope.baseObj = new Object();
     $scope.registerWithEmail = true;
+
+    $scope.baseObj.email = null;
+    $scope.baseObj.emailPwd = null;
+    $scope.baseObj.emailPwdCfrm = null;
+    $scope.baseObj.phone = null;
+    $scope.baseObj.phonePwd = null;
+    $scope.baseObj.phonePwdCfrm = null;
     //type=1:邮箱注册 type=2：手机注册
     $scope.changeRegisterType = function (type) {
         if (type == 1) {
@@ -644,6 +651,29 @@
         } else {
             $scope.registerWithEmail = false;
         }
+    }
+
+    $scope.checkExistEmail = function () {
+        alert($scope.baseObj.email);
+        $http({
+            method: "POST",
+            headers: {
+                'Content-Type':'application/json'
+            },
+            url: dfCommonService.GetHttpServer(cloudIp, cloudPort) + "/user/CheckExistEmail",
+            data: {
+                email:$scope.baseObj.email
+            }
+            //data: $scope.baseObj.email
+        }).success(function (data, status, headers, config) {
+            if (data.ResultType == "Success") {
+                alert(data.Msg);
+            } else {
+                alert(data.Msg);
+            }
+        }).error(function (data, status, headers, config) {
+            alert(data);
+        });
     }
 })
 
